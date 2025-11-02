@@ -3,7 +3,8 @@
 """
 import torch
 import torch.nn as nn
-from modules import MultiHeadAttention, PositionwiseFeedForward
+import math
+from modules import MultiHeadAttention, PositionwiseFeedForward, PositionalEncoding
 
 class DecoderBlock(nn.Module):
     """
@@ -67,3 +68,48 @@ class DecoderBlock(nn.Module):
         x = self.norm3(residual + self.dropout3(ffn_output))    # Add & Norm
 
         return x
+
+
+class Decoder(nn.Module):
+    """
+    完整的 Decoder 结构，由 N 个 DecoderBlock 堆叠而成。
+    """
+    def __init__(self, vocab_size: int, d_model: int, n_layers: int, n_heads: int, d_ff: int, dropout: float, max_len: int = 5000):
+        super().__init__()
+
+        self.embedding = nn.Embedding(vocab_size, d_model)  # 词嵌入层
+        self.positional_encoding = PositionalEncoding(d_model, dropout, max_len)    # 嵌入位置编码
+
+        # 使用 nn.ModuleList 存储 N 个独立的 DecoderBlock
+        self.layers = nn.ModuleList([
+            DecoderBlock(d_model, n_heads, d_ff, dropout) for _ in range(n_layers)
+        ])
+
+        # 最后的层归一化
+        self.norm = nn.LayerNorm(d_model)
+
+
+    def forward(self, target_seq: torch.Tensor, encoder_output: torch.Tensor, source_mask: torch.Tensor, target_mask: torch.Tensor):
+        """
+        Decoder 的前向传播。
+
+        Args:
+            target_seq (torch.Tensor): 目标序列的 token IDs, 形状 (batch_size, target_seq_len)
+            encoder_output (torch.Tensor): Encoder 的最终输出, 形状 (batch_size, source_seq_len, d_model)
+            source_mask (torch.Tensor): 源序列掩码
+            target_mask (torch.Tensor): 目标序列掩码
+
+        Returns:
+            torch.Tensor: Decoder 的输出, 形状 (batch_size, target_seq_len, d_model)
+        """
+        # 1. 词嵌入和位置编码
+        # 注意：同样，论文中 embedding 的权重会乘以 sqrt(d_model)
+        embedding_output = self.embedding(target_seq) * math.sqrt(self.embedding.embedding_dim)
+        x = self.positional_encoding(embedding_output)
+
+        # 2. 依次通过 N 个 DecoderBlock
+        for layer in self.layers:
+            x = layer(x, encoder_output, source_mask, target_mask)
+
+        # 3. 最后的层归一化
+        return self.norm(x)

@@ -92,7 +92,7 @@ class MultiHeadAttention(nn.Module):
 
 
 
-class PositionWiseFeedForward(nn.Module):
+class PositionwiseFeedForward(nn.Module):
     """
     实现 Position-wise Feed-Forward Network.
     net_structure = {

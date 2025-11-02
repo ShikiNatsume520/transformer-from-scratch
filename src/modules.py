@@ -2,8 +2,7 @@
 本脚本用于实现一些可复用的子模块：
 1. Multi_head self-attention
 2. position-wise FFN
-3. Res_block + Layer_normal
-4. Position_encode
+3. Position_encode
 """
 import math
 import torch
@@ -93,7 +92,7 @@ class MultiHeadAttention(nn.Module):
 
 
 
-class FFN(nn.Module):
+class PositionWiseFeedForward(nn.Module):
     """
     实现 Position-wise Feed-Forward Network.
     net_structure = {

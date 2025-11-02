@@ -2,7 +2,7 @@
 这里定义编码块
 """
 import torch.nn as nn
-from modules import MultiHeadAttention, PositionWiseFeedForward
+from modules import MultiHeadAttention, PositionwiseFeedForward
 
 class EncoderBlock(nn.Module):
     """
@@ -32,7 +32,7 @@ class EncoderBlock(nn.Module):
         super().__init__()
 
         self.mult_head_attention = MultiHeadAttention(d_model, n_heads, dropout)    # 一个多头注意力块
-        self.ffn = PositionWiseFeedForward(d_model, d_ff, dropout)      # 一个前馈网络块
+        self.ffn = PositionwiseFeedForward(d_model, d_ff, dropout)      # 一个前馈网络块
         self.norm1 = nn.LayerNorm(d_model)  # 多头注意力后的Norm层
         self.norm2 = nn.LayerNorm(d_model)  # 前馈块后的Norm层
         self.dropout1 = nn.Dropout(dropout)

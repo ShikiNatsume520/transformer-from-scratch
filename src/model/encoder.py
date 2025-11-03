@@ -3,7 +3,8 @@
 """
 import torch.nn as nn
 import math
-from modules import MultiHeadAttention, PositionwiseFeedForward, PositionalEncoding
+from src.model.modules import PositionwiseFeedForward, PositionalEncoding
+from src.model.attention import MultiHeadAttention
 
 class EncoderBlock(nn.Module):
     """

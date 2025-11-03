@@ -1,8 +1,8 @@
 # 在这里，实现transformer模型
 import torch
 import torch.nn as nn
-from encoder import Encoder
-from decoder import Decoder
+from src.model.encoder import Encoder
+from src.model.decoder import Decoder
 
 class Transformer(nn.Module):
     def __init__(self,
@@ -43,12 +43,12 @@ class Transformer(nn.Module):
         # 1. 将源序列和其掩码传入 Encoder
         # encoder_output 包含了源句子的全部上下文信息
         # 形状: (batch_size, source_seq_len, d_model)
-        encoder_ouput = self.encoder(source_seq, target_mask)
+        encoder_ouput = self.encoder(source_seq, source_mask)
 
         # 2. 将目标序列、Encoder 的输出以及两个掩码传入 Decoder
         # decoder_output 是目标序列在给定源序列上下文下的表示
         # 形状: (batch_size, target_seq_len, d_model)
-        decoder_output = self.decoder(target_seq, encoder_ouput, source_seq, target_mask)
+        decoder_output = self.decoder(target_seq, encoder_ouput, source_mask, target_mask)
 
         # 3. 将 Decoder 的输出传入最终的线性层，得到 logits
         # 形状: (batch_size, target_seq_len, target_vocab_size)

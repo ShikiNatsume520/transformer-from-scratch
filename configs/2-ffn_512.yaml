@@ -1,0 +1,34 @@
+# --- Experiment Settings ---
+seed: 42                      # 固定随机种子以保证实验可复现
+experiment_name: "iwslt_en_de_base_ffn_512" # 实验名称，用于结果保存
+
+# --- Model Hyperparameters ---
+d_model: 512
+n_layers: 6
+n_heads: 8
+d_ff: 512
+dropout: 0.1
+
+# --- Training Settings ---
+epochs: 10                   # 增加训练轮数
+batch_size: 16               # 保持不变，可根据显存调整
+learning_rate: 0.0003         # 配合 AdamW 和 Scheduler，可以稍大一些
+optimizer: "adamw"            # 使用 AdamW，对权重衰减处理更好
+train_subset_ratio: 0.2       # 限制训练集大小
+# warmup_steps: 4000          # (可选) 学习率调度器参数
+
+# --- Early Stopping Settings ---
+early_stopping_patience: 5      # 如果验证损失连续 5 个 epoch 没有下降，则停止训练
+early_stopping_min_delta: 0.001   # 损失下降小于 0.001 不算作一次有效改进
+
+# --- Data Settings ---
+# 这些值将由 data.py 动态填充，这里只是占位符
+tokenizer_name: "Helsinki-NLP/opus-mt-en-de"
+dataset_name: "iwslt2017"
+language_pair: "iwslt2017-en-de"
+source_vocab_size: -1 # To be filled by data.py
+target_vocab_size: -1 # To be filled by data.py
+max_len: -1           # To be filled by data.py
+
+# --- 新增的消融实验参数 ---
+use_positional_encoding: true  # 关键参数！
